@@ -8,13 +8,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-:root{--bg:#f4f6fb;--card:#fff;--ink:#1c2333;--mut:#71809e;--line:#e4e9f2;--acc:#6a5af9;--acc2:#9d6bf9;--ok:#0aa06e;--bad:#e5484d;--warn:#e8930c;--grad:linear-gradient(120deg,#6a5af9,#9d6bf9)}
+:root{--bg:#f5f3f0;--card:#fff;--ink:#211d1a;--mut:#6f6760;--line:#e6e0d9;--acc:#d2461f;--acc2:#e8722a;--ok:#1f7a4d;--bad:#b3261e;--warn:#a35d00;--grad:linear-gradient(120deg,#d2461f,#e8722a)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{overflow-x:hidden}
 body{font-family:'Be Vietnam Pro',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:14px}
 button{font-family:inherit;cursor:pointer}
 input,select,textarea{font-family:inherit;font-size:14px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);width:100%}
-input:focus,select:focus,textarea:focus{outline:2px solid #c9c2ff;border-color:var(--acc)}
+input:focus,select:focus,textarea:focus{outline:2px solid #f3c6b2;border-color:var(--acc)}
 label{font-size:12px;color:var(--mut);display:block;margin-bottom:4px;font-weight:600}
 h2{font-size:17px}h3{font-size:14px}
 .money{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -36,7 +36,7 @@ h2{font-size:17px}h3{font-size:14px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
 .kpi .lb{font-size:12px;color:var(--mut);font-weight:600}
 .kpi .vl{font-size:21px;font-weight:800;margin-top:4px}
-.kpi.grad{background:var(--grad);color:#fff;border:0}.kpi.grad .lb{color:#e3defe}
+.kpi.grad{background:var(--grad);color:#fff;border:0}.kpi.grad .lb{color:#ffe3d3}
 .btn{background:var(--grad);color:#fff;border:0;padding:10px 16px;border-radius:12px;font-weight:700;font-size:14px}
 .btn:disabled{opacity:.55;cursor:wait}
 .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink);padding:9px 14px;border-radius:12px;font-weight:600}
@@ -51,12 +51,12 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
 .tblwrap{overflow-x:auto}
 .badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:700;white-space:nowrap}
 .b-cho{background:#fdf0e0;color:#9a6206}.b-xl{background:#e6e9ff;color:#3d4fc4}.b-giao{background:#ddf5ea;color:#067a54}.b-huy{background:#fde3e3;color:#b3261e}
-.b-order{background:#efe9ff;color:#5b3df0}.b-san{background:#e2f4ff;color:#0b6ea8}
+.b-order{background:#fbeee8;color:#d2461f}.b-san{background:#e4eefa;color:#1f5fa8}
 .grid2{display:grid;grid-template-columns:1fr 380px;gap:14px;align-items:start}
 .prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .pc{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer}
 .pc:hover{border-color:var(--acc)}
-.pc .im{height:110px;background:#eef1f8;display:flex;align-items:center;justify-content:center;font-size:30px;color:#b9c2d8}
+.pc .im{height:110px;background:#fbeee8;display:flex;align-items:center;justify-content:center;font-size:30px;color:#dfa98f}
 .pc .im img{width:100%;height:100%;object-fit:cover}
 .pc .b{padding:9px 10px}
 .pc .cd{font-size:11px;color:var(--acc);font-weight:800}
@@ -78,8 +78,8 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
 .optgrid{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
 .opt{border:1.5px solid var(--line);background:#fff;padding:8px 14px;border-radius:999px;font-weight:600}
 .opt.on{background:var(--grad);color:#fff;border-color:transparent}
-.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#171c2e;color:#fff;padding:11px 18px;border-radius:12px;z-index:200;display:none;max-width:92vw;text-align:center;font-weight:600}
-#pinScr{position:fixed;inset:0;background:linear-gradient(140deg,#2b2350,#171c2e);display:flex;align-items:center;justify-content:center;z-index:300;padding:16px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#211d1a;color:#fff;padding:11px 18px;border-radius:12px;z-index:200;display:none;max-width:92vw;text-align:center;font-weight:600}
+#pinScr{position:fixed;inset:0;background:linear-gradient(140deg,#57260f,#211d1a);display:flex;align-items:center;justify-content:center;z-index:300;padding:16px}
 .pincard{background:#fff;border-radius:22px;padding:28px 24px;max-width:360px;width:100%;text-align:center}
 .pincard .lg{font-size:40px}
 .pincard h1{font-size:19px;margin:8px 0 2px}
@@ -95,7 +95,7 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
 @media(max-width:700px){
  .side{display:none}
  .main{margin-left:0;padding:12px 10px 96px}
- .bnav{position:fixed;left:0;right:0;bottom:0;background:#171c2e;display:flex;z-index:50;padding:6px 2px calc(6px + env(safe-area-inset-bottom))}
+ .bnav{position:fixed;left:0;right:0;bottom:0;background:#211d1a;display:flex;z-index:50;padding:6px 2px calc(6px + env(safe-area-inset-bottom))}
  .bnav button{flex:1;background:none;border:0;color:#aeb8d2;font-size:10.5px;font-weight:600;padding:5px 0 2px;display:flex;flex-direction:column;align-items:center;gap:2px}
  .bnav button .ic{font-size:19px}
  .bnav button.on{color:#fff}
@@ -295,13 +295,14 @@ function pgNew(){
     <div class="prods" id="prodGrid"></div></div>
   </div><div>
     <div class="card"><h3>🧺 Giỏ hàng</h3>
-      <div style="margin-top:10px"><label>Khách hàng (gõ tên / SĐT / mã KH)</label>
-      <input id="cSearch" list="custDl" placeholder="vd: ngocmaihn — Ngọc Mai"><datalist id="custDl">${D.customers.map(c=>`<option value="${esc(c.code)} — ${esc(c.name)}${c.phone?' — '+esc(c.phone):''}">`).join('')}</datalist>
+      <div style="margin-top:10px"><div class="row">
+        <div><label>Mã KH (tự ghi)</label><input id="cCode" list="custDl" placeholder="vd: ngocmaihn" autocomplete="off"></div>
+        <div style="flex:2"><label>Tên KH</label><input id="cName" list="custDl" placeholder="vd: Ngọc Mai" autocomplete="off"></div></div>
+      <datalist id="custDl">${D.customers.map(c=>`<option value="${esc(c.code)} — ${esc(c.name)}${c.phone?' — '+esc(c.phone):''}">`).join('')}</datalist>
       <p id="cInfo" style="font-size:12.5px;margin-top:5px" class="mut"></p></div>
       <div id="ncBox" style="display:none;border:1px dashed var(--line);border-radius:12px;padding:10px;margin-top:8px">
-        <b style="font-size:13px">Khách mới — sẽ tạo khi lưu đơn</b>
-        <div class="row" style="margin-top:8px"><div><label>Mã KH (admin tự đặt *)</label><input id="ncCode" placeholder="vd: ngocmaihn"></div>
-        <div><label>SĐT / Zalo</label><input id="ncPhone"></div></div>
+        <b style="font-size:13px">Khách mới — sẽ tạo khi lưu đơn (và tự vào Danh sách khách hàng)</b>
+        <div style="margin-top:8px"><label>SĐT / Zalo</label><input id="ncPhone"></div>
         <div style="margin-top:8px"><label>Địa chỉ</label><input id="ncAddr"></div>
         <div style="margin-top:8px"><label>Link Facebook</label><input id="ncFb"></div>
       </div>
@@ -331,16 +332,29 @@ function pgNew(){
       :'<p class="mut">Không thấy sản phẩm.</p>';
   };
   renderProds();$('pSearch').oninput=renderProds;$('pStockF').onchange=renderProds;
-  const findCust=()=>{const v=$('cSearch').value.split(' — ')[0].trim().toLowerCase();
-    return D.customers.find(c=>c.code.toLowerCase()===v||c.name.toLowerCase()===v||c.phone===v);};
   const custByPhone=ph=>{ph=String(ph).replace(/\D/g,'');return ph.length>=9?D.customers.find(c=>String(c.phone).replace(/\D/g,'')===ph):null;};
+  const findCust=()=>{
+    const cv=$('cCode').value.split(' — ')[0].trim().toLowerCase();
+    const nv=$('cName').value,parts=nv.split(' — ').map(x=>x.trim().toLowerCase());
+    return D.customers.find(c=>cv&&c.code.toLowerCase()===cv)
+      ||D.customers.find(c=>parts.includes(c.code.toLowerCase())||parts.includes(c.name.toLowerCase())||(c.phone&&parts.includes(c.phone)))
+      ||D.customers.find(c=>nv.trim()&&c.name.toLowerCase()===nv.trim().toLowerCase())
+      ||custByPhone(($('ncPhone')||{}).value||'');
+  };
   const updCust=()=>{
-    const c=findCust()||custByPhone(($('ncPhone')||{}).value||'');
-    $('ncBox').style.display=c?'none':'block';
-    $('cInfo').innerHTML=c?`Khách cũ <b>${esc(c.code)}</b> · ${esc(c.name)} · ${esc(c.group||'')}${num(c.debt)>0?` · <span class="bad">đang nợ ${money(c.debt)}đ</span>`:''}`
-      :($('cSearch').value.trim()?'Khách mới — điền Mã KH bên dưới (bắt buộc tự đặt).':'');
+    const c=findCust();
+    if(c){
+      if(document.activeElement!==$('cCode'))$('cCode').value=c.code;
+      if(document.activeElement!==$('cName'))$('cName').value=c.name;
+      $('ncBox').style.display='none';
+      $('cInfo').innerHTML=`Khách cũ <b>${esc(c.code)}</b> · ${esc(c.name)} · ${esc(c.group||'')}${num(c.debt)>0?` · <span class="bad">đang nợ ${money(c.debt)}đ</span>`:''}`;
+    }else{
+      const has=$('cCode').value.trim()||$('cName').value.trim();
+      $('ncBox').style.display=has?'block':'none';
+      $('cInfo').innerHTML=has?($('cCode').value.trim()?`Khách mới — sẽ tạo Mã KH <b>${esc($('cCode').value.trim())}</b> khi lưu đơn.`:'Khách mới — cần ghi Mã KH ở ô bên trái.') :'';
+    }
     return c;};
-  $('cSearch').oninput=updCust;$('ncPhone').addEventListener('input',updCust);
+  $('cCode').oninput=updCust;$('cName').oninput=updCust;$('ncPhone').addEventListener('input',updCust);
   $('oDisc').oninput=renderCart;$('oPaid').oninput=renderCart;renderCart();
   $('oSubmit').onclick=async()=>{
     if(!CART.length)return toast('Giỏ đang trống',false);
@@ -348,9 +362,9 @@ function pgNew(){
     payload.items[0].discount=num($('oDisc').value);
     if(c)payload.customerCode=c.code;
     else{
-      const name=$('cSearch').value.trim();if(!name)return toast('Nhập tên khách',false);
-      const code=$('ncCode').value.trim();
-      if(!code)return toast('Khách mới: phải tự đặt Mã KH (yêu cầu của shop)',false);
+      const name=$('cName').value.split(' — ')[0].trim();if(!name)return toast('Nhập Tên KH',false);
+      const code=$('cCode').value.split(' — ')[0].trim();
+      if(!code)return toast('Khách mới: phải tự ghi Mã KH ở ô Mã KH',false);
       if(/\s/.test(code))return toast('Mã KH không được có khoảng trắng',false);
       if(D.customers.some(x=>x.code.toLowerCase()===code.toLowerCase()))return toast('Mã KH "'+code+'" đã có — chọn khách cũ hoặc đặt mã khác',false);
       const ph=$('ncPhone').value.trim();
@@ -398,15 +412,14 @@ function dlBillPdf(){
   const el=$('bill');if(!el||typeof html2pdf==='undefined')return toast('Chưa sẵn sàng xuất PDF',false);
   html2pdf().set({margin:10,filename:'phieu-don-hang.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(el).save();
 }
-
 /* ================= DON HANG ================= */
 let ORD=null,ORD_F='active'; // active = an da giao (mac dinh)
 async function pgOrders(){
-  $('main').innerHTML=head('Đơn hàng',`<button class="btn-ghost" onclick="pgOrders()">↻ Làm mới</button>`)+`
+  $('main').innerHTML=head('Đơn hàng',`<button class="btn-ghost" onclick="pgOrders()">Làm mới</button>`)+`
   <div class="card"><div class="row">
     <div><label>Từ ngày</label><input type="date" id="oFrom" value="${shiftISO(-60)}"></div>
     <div><label>Đến ngày</label><input type="date" id="oTo" value="${todayISO()}"></div>
-    <div style="flex:2"><label>Tìm (mã đơn / khách / sản phẩm)</label><input id="oQ" placeholder="🔍 Tìm…"></div>
+    <div style="flex:2"><label>Tìm (mã đơn / khách / sản phẩm)</label><input id="oQ" placeholder="Tìm…"></div>
     <div><label>Trạng thái</label><select id="oStatus">
       <option value="active" selected>Đang xử lý (ẩn đơn đã giao)</option>
       <option value="all">Tất cả</option><option value="Chờ hàng">Chờ hàng</option>
@@ -435,7 +448,7 @@ async function pgOrders(){
     $('oTo').value=todayISO();load();});
   load();
 }
-function orderType(o){return o.status==='Chờ hàng'?'<span class="badge b-order">🛫 Order</span>':'<span class="badge b-san">🏠 Có sẵn</span>';}
+function orderType(o){return o.status==='Chờ hàng'?'<span class="badge b-order">Order</span>':'<span class="badge b-san">Có sẵn</span>';}
 function renderOrders(){
   if(!ORD)return;const f=$('oStatus').value,q=norm($('oQ').value);
   const stCls={'Chờ hàng':'b-cho','Đang xử lý':'b-xl','Đã giao':'b-giao','Đã hủy':'b-huy'};
@@ -457,7 +470,7 @@ function renderOrders(){
     <td><span class="badge ${stCls[o.status]||''}">${esc(o.status)}</span><br>
     <select data-st="${esc(o.code)}" style="margin-top:5px;padding:5px;font-size:12.5px">
       <option value="">— Đổi trạng thái —</option>
-      ${o.status==='Đã giao'||o.status==='Đã hủy'?'<option value="mo">↺ Mở lại</option>':'<option value="giao">✔ Đã giao</option><option value="huy">✕ Huỷ đơn</option>'}
+      ${o.status==='Đã giao'||o.status==='Đã hủy'?'<option value="mo">Mở lại</option>':'<option value="giao">Đã giao</option><option value="huy">Huỷ đơn</option>'}
     </select></td>
     <td><button class="btn-ghost" data-pdf="${esc(o.code)}" style="padding:6px 10px">Phiếu</button></td></tr>`).join('')}
   </tbody></table></div></div>`:'<div class="card"><p class="mut">Không có đơn nào khớp bộ lọc.</p></div>';
@@ -477,14 +490,14 @@ function renderOrders(){
 /* ================= DON ONLINE ================= */
 let WEB=null;
 async function pgWeb(){
-  $('main').innerHTML=head('Đơn online (từ trang bán hàng)',`<button class="btn-ghost" onclick="pgWeb()">↻ Làm mới</button>`)+'<div id="wList"><div class="card">Đang tải…</div></div>';
+  $('main').innerHTML=head('Đơn online (từ trang bán hàng)',`<button class="btn-ghost" onclick="pgWeb()">Làm mới</button>`)+'<div id="wList"><div class="card">Đang tải…</div></div>';
   try{WEB=await rpc('listWebOrders');renderWeb();}
   catch(e){$('wList').innerHTML=`<div class="card bad">Lỗi: ${esc(e.message)}</div>`;}
 }
 function renderWeb(){
   const list=(WEB&&WEB.orders)||[];
   const pend=list.filter(o=>o.status==='Chờ duyệt');
-  $('wList').innerHTML=(pend.length?`<div class="card" style="border-color:#f3d19a;background:#fffaf0"><b>⏳ ${pend.length} đơn online đang chờ duyệt</b></div>`:'')
+  $('wList').innerHTML=(pend.length?`<div class="card" style="border-color:#f3d19a;background:#fffaf0"><b>${pend.length} đơn online đang chờ duyệt</b></div>`:'')
   +(list.length?list.map(o=>`<div class="card">
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><b>${esc(o.code)}</b><span class="mut">${esc(o.time||'')}</span>
     <span class="badge ${o.status==='Chờ duyệt'?'b-cho':o.status==='Đã duyệt'?'b-giao':'b-huy'}">${esc(o.status)}${o.dh?' → '+esc(o.dh):''}</span></div>
@@ -492,7 +505,7 @@ function renderWeb(){
     <div class="tblwrap"><table><thead><tr><th>Mã</th><th>Sản phẩm</th><th>Màu</th><th>Size</th><th class="money">SL</th><th class="money">Đơn giá</th><th class="money">Thành tiền</th></tr></thead><tbody>
     ${(o.items||[]).map(i=>`<tr><td>${esc(i.code)}</td><td>${esc(i.name||'')}</td><td>${esc(i.color||'')}</td><td>${esc(i.size||'')}</td><td class="money">${i.qty}</td><td class="money">${money(i.price)}</td><td class="money">${money(num(i.price)*num(i.qty))}</td></tr>`).join('')}
     </tbody></table></div>
-    ${o.status==='Chờ duyệt'?`<div class="row" style="margin-top:10px"><button class="btn-ok" data-ap="${esc(o.code)}">✔ Duyệt → tạo đơn thật</button><button class="btn-red" data-rj="${esc(o.code)}">✕ Từ chối</button></div>`:''}
+    ${o.status==='Chờ duyệt'?`<div class="row" style="margin-top:10px"><button class="btn-ok" data-ap="${esc(o.code)}">Duyệt → tạo đơn thật</button><button class="btn-red" data-rj="${esc(o.code)}">Từ chối</button></div>`:''}
   </div>`).join(''):'<div class="card"><p class="mut">Chưa có đơn online nào.</p></div>');
   document.querySelectorAll('[data-ap]').forEach(b=>b.onclick=async()=>{
     if(!confirm('Duyệt đơn '+b.dataset.ap+' và tạo đơn thật?'))return;
@@ -503,11 +516,10 @@ function renderWeb(){
     try{await rpc('rejectWebOrder',b.dataset.rj,why);toast('Đã từ chối đơn '+b.dataset.rj,true);pgWeb();}
     catch(e){toast('Lỗi: '+e.message,false);}});
 }
-
 /* ================= HANG HOA ================= */
 function pgProds(){
   $('main').innerHTML=head('Hàng hoá',`<button class="btn" onclick="prodForm(null)">＋ Thêm sản phẩm</button>`)+`
-  <div class="card"><input id="ppQ" placeholder="🔍 Tìm mã / tên sản phẩm…"><div class="prods" id="ppGrid" style="margin-top:12px"></div></div>`;
+  <div class="card"><input id="ppQ" placeholder="Tìm mã / tên sản phẩm…"><div class="prods" id="ppGrid" style="margin-top:12px"></div></div>`;
   const render=()=>{const q=norm($('ppQ').value);
     const list=D.products.filter(p=>!q||norm(p.code+' '+p.name).includes(q));
     $('ppGrid').innerHTML=list.length?list.map(p=>`<div class="pc" onclick="prodDetail('${esc(p.code)}')">
@@ -533,10 +545,10 @@ function prodDetail(code){
     ${vars.length?`<h3 style="margin:12px 0 6px">Tồn theo màu × size</h3><div class="tblwrap"><table><thead><tr><th>Màu</th><th>Size</th><th class="money">Đã nhập</th><th class="money">Đã bán</th><th class="money">Tồn</th></tr></thead><tbody>
     ${vars.map(x=>`<tr><td>${esc(x.color||'—')}</td><td>${esc(x.size||'—')}</td><td class="money">${x.inQty}</td><td class="money">${x.outQty}</td><td class="money"><b style="color:${num(x.qty)<0?'var(--bad)':'inherit'}">${x.qty}</b></td></tr>`).join('')}</tbody></table></div>`:''}
     <div class="row noprint" style="margin-top:14px">
-      <button class="btn-ghost" onclick="closeModal();pickVariant('${esc(p.code)}')">🛒 Tạo đơn</button>
-      <button class="btn-ghost" onclick="closeModal();prodForm(prodBy('${esc(p.code)}'))">✏️ Sửa</button>
-      <button class="btn-ghost" onclick="imgForCode='${esc(p.code)}';$('imgFile').click()">${p.img?'🖼 Đổi ảnh':'🖼 Thêm ảnh'}</button>
-      <button class="btn-red" onclick="delProd('${esc(p.code)}')">🗑 Xoá</button>
+      <button class="btn-ghost" onclick="closeModal();pickVariant('${esc(p.code)}')">Tạo đơn</button>
+      <button class="btn-ghost" onclick="closeModal();prodForm(prodBy('${esc(p.code)}'))">Sửa</button>
+      <button class="btn-ghost" onclick="imgForCode='${esc(p.code)}';$('imgFile').click()">${p.img?'Đổi ảnh':'Thêm ảnh'}</button>
+      <button class="btn-red" onclick="delProd('${esc(p.code)}')">Xoá</button>
     </div>`,true);
 }
 let imgForCode='';
@@ -562,7 +574,7 @@ function prodForm(p){
   <div><label>Giá nhập (tệ)</label><input id="pfCny" type="number" step="0.01" value="${p.priceCny??''}"></div>
   <div><label>Ship + phí DV/sp (VNĐ)</label><input id="pfShip" type="number" value="${p.ship??''}"></div></div>
   <div style="margin-top:8px"><label>Link Taobao</label><input id="pfLink" value="${esc(p.link||'')}"></div>
-  <button class="btn" id="pfSave" style="width:100%;margin-top:14px">✔ Lưu sản phẩm</button>`);
+  <button class="btn" id="pfSave" style="width:100%;margin-top:14px">Lưu sản phẩm</button>`);
   $('pfSave').onclick=async()=>{
     const o={code:$('pfCode').value.trim(),name:$('pfName').value.trim(),price:$('pfPrice').value===''?'' :num($('pfPrice').value),
       priceCny:$('pfCny').value===''?'' :num($('pfCny').value),ship:$('pfShip').value===''?'' :num($('pfShip').value),link:$('pfLink').value.trim(),isNew};
@@ -577,13 +589,13 @@ async function pgStock(){
   const rows=(D.stock||[]).map(x=>({...x,name:(prodBy(x.code)||{}).name||''}));
   const tongTon=rows.reduce((s,x)=>s+num(x.qty),0);
   const canDat=rows.reduce((s,x)=>s+(num(x.qty)<0?-num(x.qty):0),0);
-  $('main').innerHTML=head('Tồn kho',`<button class="btn-ghost" onclick="pgStock()">↻ Làm mới</button>`)+`
+  $('main').innerHTML=head('Tồn kho',`<button class="btn-ghost" onclick="pgStock()">Làm mới</button>`)+`
   <div class="kpis">
     <div class="kpi grad"><div class="lb">Tổng tồn</div><div class="vl">${tongTon} cái</div></div>
     <div class="kpi"><div class="lb">Cần đặt Taobao</div><div class="vl" style="color:var(--bad)">${canDat} cái</div></div>
     <div class="kpi"><div class="lb">Dòng màu/size</div><div class="vl">${rows.length}</div></div>
   </div>
-  <div class="card"><input id="stQ" placeholder="🔍 Tìm mã / tên / màu / size…">
+  <div class="card"><input id="stQ" placeholder="Tìm mã / tên / màu / size…">
   <div class="tblwrap" style="margin-top:10px"><table><thead><tr><th>Mã</th><th>Tên</th><th>Màu</th><th>Size</th><th class="money">Đã nhập</th><th class="money">Đã bán</th><th class="money">Tồn</th><th class="money">Cần đặt</th></tr></thead>
   <tbody id="stBody"></tbody></table></div></div>
   <div class="card"><h3>Báo cáo xuất – nhập – tồn theo kỳ</h3>
@@ -610,7 +622,6 @@ async function pgStock(){
     }catch(e){$('xBox').innerHTML=`<p class="bad">Lỗi: ${esc(e.message)}</p>`;}
   };
 }
-
 /* ================= NHAP HANG VE ================= */
 function pgImport(){
   $('main').innerHTML=head('Nhập hàng về')+`
@@ -681,7 +692,7 @@ async function pgRate(){
 /* ================= KHACH HANG ================= */
 function pgCusts(){
   $('main').innerHTML=head('Khách hàng',`<button class="btn" onclick="custForm(null)">＋ Thêm khách</button>`)+`
-  <div class="card"><input id="cuQ" placeholder="🔍 Tìm mã KH / tên / SĐT…"><div id="cuList" style="margin-top:10px"></div></div>`;
+  <div class="card"><input id="cuQ" placeholder="Tìm mã KH / tên / SĐT…"><div id="cuList" style="margin-top:10px"></div></div>`;
   const render=()=>{const q=norm($('cuQ').value);
     const list=D.customers.filter(c=>!q||norm([c.code,c.name,c.phone].join(' ')).includes(q));
     $('cuList').innerHTML=list.length?list.map(c=>`<div class="cart-line">
