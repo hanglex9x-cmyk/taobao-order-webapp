@@ -174,6 +174,7 @@ const PAGES=[
  ['dash','📊','Tổng quan'],['new','🛒','Tạo đơn'],['orders','📦','Đơn hàng'],['web','🌐','Đơn online'],
  ['prods','👗','Hàng hoá'],['stock','🏷️','Tồn kho'],['import','📥','Nhập hàng về'],['rate','💱','Tỷ giá'],['custs','👥','Khách hàng']];
 let CUR='dash';
+let NAVSEQ=0; // moi lan chuyen trang +1; trang nao tai xong ma da cu thi khong ve de trang khac
 function buildNav(){
   $('navSide').innerHTML=PAGES.map(p=>`<button data-pg="${p[0]}" class="${CUR===p[0]?'on':''}">${p[1]} ${p[2]}</button>`).join('');
   const bot=[PAGES[0],PAGES[1],PAGES[2],PAGES[4],PAGES[5]];
@@ -204,9 +205,11 @@ if(PIN){(async()=>{try{D=await rpc('getInitData');enterApp();}catch(e){PIN='';lo
 /* ================= TONG QUAN ================= */
 let DASH=null;
 async function pgDash(){
+  const seq=++NAVSEQ;
   $('main').innerHTML=head('Tổng quan',`<button class="btn-ghost" onclick="pgDash()">↻ Làm mới</button>`)+'<div class="card">Đang tải…</div>';
   try{
     const [d]=await Promise.all([rpc('getDashboard',new Date().getFullYear()),D?Promise.resolve():refreshInit()]);
+    if(seq!==NAVSEQ)return;
     DASH=d;
     const t=d.todayStat,m=d.month,pm=d.prevMonth,o=d.open;
     const choVe=(D.stock||[]).filter(x=>num(x.qty)<0).reduce((s,x)=>s+(-num(x.qty)),0);
@@ -225,19 +228,7 @@ async function pgDash(){
       ${kpi('Đơn đang xử lý',o.processing,`<div class="mut" style="font-size:12px">${money(o.processingValue)}đ</div>`)}
       ${kpi('Khách còn nợ',money(d.debtTotal)+'đ',`<div class="mut" style="font-size:12px">${d.debtCount} khách</div>`)}
       ${kpi('Tổng tồn kho',d.stockQty+' cái')}
-      ${kpi('Tỷ giá mới nhất',d.rate?money(d.rate.rate)+'đ':'—',d.rate?`<div class="mut" style="font-size:12px">ngày ${esc(d.rate.date)}</div>`:'')}
-      ${kpi('Đã giao hôm nay',t.delivered)}
-    </div>
-    <div class="card"><h3>Doanh thu theo tháng — ${d.year}</h3>
-      <div class="bars">${d.months.map((x,i)=>`<div class="bar" style="height:${Math.max(3,Math.round(num(x.revenue)/max*100))}%"><span>${num(x.revenue)?money(x.revenue):''}</span><em>T${i+1}</em></div>`).join('')}</div>
-      <div style="height:20px"></div>
-    </div>
-    ${d.top&&d.top.length?`<div class="card"><h3>Bán chạy</h3><div class="tblwrap"><table><tbody>${d.top.map(x=>`<tr><td><b>${esc(x.code||'')}</b> ${esc(x.name||'')}</td><td class="money">${esc(x.qty??'')}</td></tr>`).join('')}</tbody></table></div></div>`:''}
-    ${d.debtors&&d.debtors.length?`<div class="card"><h3>Khách đang nợ</h3><div class="tblwrap"><table><thead><tr><th>Khách</th><th class="money">Còn nợ</th></tr></thead><tbody>${d.debtors.map(c=>`<tr><td><b>${esc(c.code)}</b> — ${esc(c.name)}</td><td class="money bad"><b>${money(c.debt)}đ</b></td></tr>`).join('')}</tbody></table></div></div>`:''}
-    ${d.short&&d.short.length?`<div class="card"><h3>⚠️ Màu/size cần đặt Taobao (đã bán quá tồn)</h3><div class="tblwrap"><table><thead><tr><th>Mã</th><th>Tên</th><th>Màu</th><th>Size</th><th class="money">Thiếu</th></tr></thead><tbody>${d.short.map(x=>`<tr><td><b>${esc(x.code)}</b></td><td>${esc(x.name||'')}</td><td>${esc(x.color||'')}</td><td>${esc(x.size||'')}</td><td class="money bad"><b>${Math.abs(num(x.qty))}</b></td></tr>`).join('')}</tbody></table></div></div>`:''}`;
-  }catch(e){$('main').innerHTML=head('Tổng quan')+`<div class="card bad">Lỗi tải tổng quan: ${esc(e.message)}</div>`;}
-}
-
+      ${kpi('Tỷ giá mới nhất',d.rate?money(d.rate.rate)+'đ':'—',d.rate?`<div class="mut" style="font-size:12px
 /* ================= TAO DON ================= */
 let CART=[]; // {code,color,size,qty}
 function variantStock(code,color,size){const x=(D.stock||[]).find(s=>s.code===code&&s.color===color&&s.size===size);return x?num(x.qty):0;}
@@ -288,6 +279,7 @@ function chQty(ix,d){CART[ix].qty=Math.max(1,CART[ix].qty+d);renderCart();}
 function setQty(ix,v){CART[ix].qty=Math.max(1,num(v)||1);renderCart();}
 function delLine(ix){CART.splice(ix,1);renderCart();}
 function pgNew(){
+  ++NAVSEQ;
   $('main').innerHTML=head('Tạo đơn',`<span class="chip on">Số đơn tới: ${esc(D.nextOrder||'')}</span>`)+`
   <div class="grid2"><div>
     <div class="card"><div class="row" style="margin-bottom:10px"><div style="flex:2"><input id="pSearch" placeholder="🔍 Tìm mã hàng / tên sản phẩm…"></div>
@@ -351,7 +343,7 @@ function pgNew(){
     }else{
       const has=$('cCode').value.trim()||$('cName').value.trim();
       $('ncBox').style.display=has?'block':'none';
-      $('cInfo').innerHTML=has?($('cCode').value.trim()?`Khách mới — sẽ tạo Mã KH <b>${esc($('cCode').value.trim())}</b> khi lưu đơn.`:'Khách mới — cần ghi Mã KH ở ô bên trái.') :'';
+      $('cInfo').innerHTML=has?($('cCode').value.trim()?`Khách mới — sẽ tạo Mã KH <b>${esc($('cCode').value.trim())}</b> khi lưu đơn.`:'Khách mới — cần ghi Mã KH ở ô bên trái.')':'';
     }
     return c;};
   $('cCode').oninput=updCust;$('cName').oninput=updCust;$('ncPhone').addEventListener('input',updCust);
@@ -391,35 +383,15 @@ function showBill(r,title){
   const zaloTxt=`Don hang ${r.orderCode} - LOAN BINH DO MUA\nKhach: ${cu.name||''}\nTong: ${money(o.total)}d - Da thu: ${money(o.paid)}d - Con lai: ${money(o.remain)}d\nCam on ban da ung ho shop! Hang order Taobao ve 12-18 ngay.`;
   openModal(`<div id="bill">
     <p class="c" style="font-size:26px">🛍️</p><h2>LOAN BÌNH ĐỒ MÚA</h2>
-    <p class="c mut">${esc(title||'PHIẾU ĐƠN HÀNG')} • <b>${esc(r.orderCode||'')}</b></p>
-    <p style="margin-top:10px">Khách: <b>${esc(cu.name||'')}</b>${cu.phone?` • ${esc(cu.phone)}`:''}${cu.address?`<br>Địa chỉ: ${esc(cu.address)}`:''}</p>
-    <table style="margin-top:8px"><thead><tr><th>Sản phẩm</th><th class="money">SL</th><th class="money">Đơn giá</th><th class="money">Thành tiền</th></tr></thead>
-    <tbody>${(o.lines||[]).map(billLine).join('')}</tbody></table>
-    <table style="margin-top:6px"><tbody>
-      <tr><td>Tổng cộng</td><td class="money"><b>${money(o.total)}đ</b></td></tr>
-      <tr><td>Đã thu</td><td class="money">${money(o.paid)}đ</td></tr>
-      <tr><td>Còn lại</td><td class="money bad"><b>${money(o.remain)}đ</b></td></tr></tbody></table>
-    <p class="c mut" style="margin-top:10px">Cảm ơn bạn đã ủng hộ shop! Hàng order Taobao về 12–18 ngày.</p></div>
-    <div class="row noprint" style="margin-top:14px">
-      ${r.pdfUrl?`<button class="btn-ghost" onclick="window.open('${esc(r.pdfUrl)}','_blank')">📄 Mở PDF</button>`:''}
-      <button class="btn-ghost" onclick="dlBillPdf()">⬇ Xuất PDF</button>
-      <button class="btn-ghost" onclick="window.print()">🖨 In phiếu</button>
-      <button class="btn-ok" onclick="navigator.clipboard&&navigator.clipboard.writeText(\`${zaloTxt}\`).then(()=>toast('Đã chép nội dung — dán vào Zalo cho khách',true))">💬 Chép gửi Zalo</button>
-      <button class="btn" onclick="closeModal();go('orders')">Đóng</button>
-    </div>`,true);
-}
-function dlBillPdf(){
-  const el=$('bill');if(!el||typeof html2pdf==='undefined')return toast('Chưa sẵn sàng xuất PDF',false);
-  html2pdf().set({margin:10,filename:'phieu-don-hang.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(el).save();
-}
 /* ================= DON HANG ================= */
 let ORD=null,ORD_F='active'; // active = an da giao (mac dinh)
 async function pgOrders(){
-  $('main').innerHTML=head('Đơn hàng',`<button class="btn-ghost" onclick="pgOrders()">Làm mới</button>`)+`
+  const seq=++NAVSEQ;
+  $('main').innerHTML=head('Đơn hàng',`<button class="btn-ghost" onclick="pgOrders()">↻ Làm mới</button>`)+`
   <div class="card"><div class="row">
     <div><label>Từ ngày</label><input type="date" id="oFrom" value="${shiftISO(-60)}"></div>
     <div><label>Đến ngày</label><input type="date" id="oTo" value="${todayISO()}"></div>
-    <div style="flex:2"><label>Tìm (mã đơn / khách / sản phẩm)</label><input id="oQ" placeholder="Tìm…"></div>
+    <div style="flex:2"><label>Tìm (mã đơn / khách / sản phẩm)</label><input id="oQ" placeholder="🔍 Tìm…"></div>
     <div><label>Trạng thái</label><select id="oStatus">
       <option value="active" selected>Đang xử lý (ẩn đơn đã giao)</option>
       <option value="all">Tất cả</option><option value="Chờ hàng">Chờ hàng</option>
@@ -433,8 +405,8 @@ async function pgOrders(){
   <div id="oList"><div class="card">Đang tải…</div></div>`;
   const load=async()=>{
     $('oList').innerHTML='<div class="card">Đang tải…</div>';
-    try{ORD=await rpc('listOrders',$('oFrom').value,$('oTo').value);renderOrders();}
-    catch(e){$('oList').innerHTML=`<div class="card bad">Lỗi: ${esc(e.message)}</div>`;}
+    try{ORD=await rpc('listOrders',$('oFrom').value,$('oTo').value);if(seq!==NAVSEQ)return;renderOrders();}
+    catch(e){if(seq!==NAVSEQ)return;$('oList').innerHTML=`<div class="card bad">Lỗi: ${esc(e.message)}</div>`;}
   };
   $('oLoad').onclick=load;$('oQ').oninput=renderOrders;$('oStatus').onchange=renderOrders;
   document.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{
@@ -448,7 +420,7 @@ async function pgOrders(){
     $('oTo').value=todayISO();load();});
   load();
 }
-function orderType(o){return o.status==='Chờ hàng'?'<span class="badge b-order">Order</span>':'<span class="badge b-san">Có sẵn</span>';}
+function orderType(o){return o.status==='Chờ hàng'?'<span class="badge b-order">🛫 Order</span>':'<span class="badge b-san">🏠 Có sẵn</span>';}
 function renderOrders(){
   if(!ORD)return;const f=$('oStatus').value,q=norm($('oQ').value);
   const stCls={'Chờ hàng':'b-cho','Đang xử lý':'b-xl','Đã giao':'b-giao','Đã hủy':'b-huy'};
@@ -470,7 +442,7 @@ function renderOrders(){
     <td><span class="badge ${stCls[o.status]||''}">${esc(o.status)}</span><br>
     <select data-st="${esc(o.code)}" style="margin-top:5px;padding:5px;font-size:12.5px">
       <option value="">— Đổi trạng thái —</option>
-      ${o.status==='Đã giao'||o.status==='Đã hủy'?'<option value="mo">Mở lại</option>':'<option value="giao">Đã giao</option><option value="huy">Huỷ đơn</option>'}
+      ${o.status==='Đã giao'||o.status==='Đã hủy'?'<option value="mo">↺ Mở lại</option>':'<option value="giao">✔ Đã giao</option><option value="huy">✕ Huỷ đơn</option>'}
     </select></td>
     <td><button class="btn-ghost" data-pdf="${esc(o.code)}" style="padding:6px 10px">Phiếu</button></td></tr>`).join('')}
   </tbody></table></div></div>`:'<div class="card"><p class="mut">Không có đơn nào khớp bộ lọc.</p></div>';
@@ -490,14 +462,15 @@ function renderOrders(){
 /* ================= DON ONLINE ================= */
 let WEB=null;
 async function pgWeb(){
-  $('main').innerHTML=head('Đơn online (từ trang bán hàng)',`<button class="btn-ghost" onclick="pgWeb()">Làm mới</button>`)+'<div id="wList"><div class="card">Đang tải…</div></div>';
-  try{WEB=await rpc('listWebOrders');renderWeb();}
-  catch(e){$('wList').innerHTML=`<div class="card bad">Lỗi: ${esc(e.message)}</div>`;}
+  const seq=++NAVSEQ;
+  $('main').innerHTML=head('Đơn online (từ trang bán hàng)',`<button class="btn-ghost" onclick="pgWeb()">↻ Làm mới</button>`)+'<div id="wList"><div class="card">Đang tải…</div></div>';
+  try{WEB=await rpc('listWebOrders');if(seq!==NAVSEQ)return;renderWeb();}
+  catch(e){if(seq!==NAVSEQ)return;$('wList').innerHTML=`<div class="card bad">Lỗi: ${esc(e.message)}</div>`;}
 }
 function renderWeb(){
   const list=(WEB&&WEB.orders)||[];
   const pend=list.filter(o=>o.status==='Chờ duyệt');
-  $('wList').innerHTML=(pend.length?`<div class="card" style="border-color:#f3d19a;background:#fffaf0"><b>${pend.length} đơn online đang chờ duyệt</b></div>`:'')
+  $('wList').innerHTML=(pend.length?`<div class="card" style="border-color:#f3d19a;background:#fffaf0"><b>⏳ ${pend.length} đơn online đang chờ duyệt</b></div>`:'')
   +(list.length?list.map(o=>`<div class="card">
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><b>${esc(o.code)}</b><span class="mut">${esc(o.time||'')}</span>
     <span class="badge ${o.status==='Chờ duyệt'?'b-cho':o.status==='Đã duyệt'?'b-giao':'b-huy'}">${esc(o.status)}${o.dh?' → '+esc(o.dh):''}</span></div>
@@ -505,7 +478,7 @@ function renderWeb(){
     <div class="tblwrap"><table><thead><tr><th>Mã</th><th>Sản phẩm</th><th>Màu</th><th>Size</th><th class="money">SL</th><th class="money">Đơn giá</th><th class="money">Thành tiền</th></tr></thead><tbody>
     ${(o.items||[]).map(i=>`<tr><td>${esc(i.code)}</td><td>${esc(i.name||'')}</td><td>${esc(i.color||'')}</td><td>${esc(i.size||'')}</td><td class="money">${i.qty}</td><td class="money">${money(i.price)}</td><td class="money">${money(num(i.price)*num(i.qty))}</td></tr>`).join('')}
     </tbody></table></div>
-    ${o.status==='Chờ duyệt'?`<div class="row" style="margin-top:10px"><button class="btn-ok" data-ap="${esc(o.code)}">Duyệt → tạo đơn thật</button><button class="btn-red" data-rj="${esc(o.code)}">Từ chối</button></div>`:''}
+    ${o.status==='Chờ duyệt'?`<div class="row" style="margin-top:10px"><button class="btn-ok" data-ap="${esc(o.code)}">✔ Duyệt → tạo đơn thật</button><button class="btn-red" data-rj="${esc(o.code)}">✕ Từ chối</button></div>`:''}
   </div>`).join(''):'<div class="card"><p class="mut">Chưa có đơn online nào.</p></div>');
   document.querySelectorAll('[data-ap]').forEach(b=>b.onclick=async()=>{
     if(!confirm('Duyệt đơn '+b.dataset.ap+' và tạo đơn thật?'))return;
@@ -516,10 +489,12 @@ function renderWeb(){
     try{await rpc('rejectWebOrder',b.dataset.rj,why);toast('Đã từ chối đơn '+b.dataset.rj,true);pgWeb();}
     catch(e){toast('Lỗi: '+e.message,false);}});
 }
+
 /* ================= HANG HOA ================= */
 function pgProds(){
+  ++NAVSEQ;
   $('main').innerHTML=head('Hàng hoá',`<button class="btn" onclick="prodForm(null)">＋ Thêm sản phẩm</button>`)+`
-  <div class="card"><input id="ppQ" placeholder="Tìm mã / tên sản phẩm…"><div class="prods" id="ppGrid" style="margin-top:12px"></div></div>`;
+  <div class="card"><input id="ppQ" placeholder="🔍 Tìm mã / tên sản phẩm…"><div class="prods" id="ppGrid" style="margin-top:12px"></div></div>`;
   const render=()=>{const q=norm($('ppQ').value);
     const list=D.products.filter(p=>!q||norm(p.code+' '+p.name).includes(q));
     $('ppGrid').innerHTML=list.length?list.map(p=>`<div class="pc" onclick="prodDetail('${esc(p.code)}')">
@@ -545,10 +520,10 @@ function prodDetail(code){
     ${vars.length?`<h3 style="margin:12px 0 6px">Tồn theo màu × size</h3><div class="tblwrap"><table><thead><tr><th>Màu</th><th>Size</th><th class="money">Đã nhập</th><th class="money">Đã bán</th><th class="money">Tồn</th></tr></thead><tbody>
     ${vars.map(x=>`<tr><td>${esc(x.color||'—')}</td><td>${esc(x.size||'—')}</td><td class="money">${x.inQty}</td><td class="money">${x.outQty}</td><td class="money"><b style="color:${num(x.qty)<0?'var(--bad)':'inherit'}">${x.qty}</b></td></tr>`).join('')}</tbody></table></div>`:''}
     <div class="row noprint" style="margin-top:14px">
-      <button class="btn-ghost" onclick="closeModal();pickVariant('${esc(p.code)}')">Tạo đơn</button>
-      <button class="btn-ghost" onclick="closeModal();prodForm(prodBy('${esc(p.code)}'))">Sửa</button>
-      <button class="btn-ghost" onclick="imgForCode='${esc(p.code)}';$('imgFile').click()">${p.img?'Đổi ảnh':'Thêm ảnh'}</button>
-      <button class="btn-red" onclick="delProd('${esc(p.code)}')">Xoá</button>
+      <button class="btn-ghost" onclick="closeModal();pickVariant('${esc(p.code)}')">🛒 Tạo đơn</button>
+      <button class="btn-ghost" onclick="closeModal();prodForm(prodBy('${esc(p.code)}'))">✏️ Sửa</button>
+      <button class="btn-ghost" onclick="imgForCode='${esc(p.code)}';$('imgFile').click()">${p.img?'🖼 Đổi ảnh':'🖼 Thêm ảnh'}</button>
+      <button class="btn-red" onclick="delProd('${esc(p.code)}')">🗑 Xoá</button>
     </div>`,true);
 }
 let imgForCode='';
@@ -574,7 +549,7 @@ function prodForm(p){
   <div><label>Giá nhập (tệ)</label><input id="pfCny" type="number" step="0.01" value="${p.priceCny??''}"></div>
   <div><label>Ship + phí DV/sp (VNĐ)</label><input id="pfShip" type="number" value="${p.ship??''}"></div></div>
   <div style="margin-top:8px"><label>Link Taobao</label><input id="pfLink" value="${esc(p.link||'')}"></div>
-  <button class="btn" id="pfSave" style="width:100%;margin-top:14px">Lưu sản phẩm</button>`);
+  <button class="btn" id="pfSave" style="width:100%;margin-top:14px">✔ Lưu sản phẩm</button>`);
   $('pfSave').onclick=async()=>{
     const o={code:$('pfCode').value.trim(),name:$('pfName').value.trim(),price:$('pfPrice').value===''?'' :num($('pfPrice').value),
       priceCny:$('pfCny').value===''?'' :num($('pfCny').value),ship:$('pfShip').value===''?'' :num($('pfShip').value),link:$('pfLink').value.trim(),isNew};
@@ -586,16 +561,17 @@ function prodForm(p){
 
 /* ================= TON KHO + XNT ================= */
 async function pgStock(){
+  const seq=++NAVSEQ;
   const rows=(D.stock||[]).map(x=>({...x,name:(prodBy(x.code)||{}).name||''}));
   const tongTon=rows.reduce((s,x)=>s+num(x.qty),0);
   const canDat=rows.reduce((s,x)=>s+(num(x.qty)<0?-num(x.qty):0),0);
-  $('main').innerHTML=head('Tồn kho',`<button class="btn-ghost" onclick="pgStock()">Làm mới</button>`)+`
+  $('main').innerHTML=head('Tồn kho',`<button class="btn-ghost" onclick="pgStock()">↻ Làm mới</button>`)+`
   <div class="kpis">
     <div class="kpi grad"><div class="lb">Tổng tồn</div><div class="vl">${tongTon} cái</div></div>
     <div class="kpi"><div class="lb">Cần đặt Taobao</div><div class="vl" style="color:var(--bad)">${canDat} cái</div></div>
     <div class="kpi"><div class="lb">Dòng màu/size</div><div class="vl">${rows.length}</div></div>
   </div>
-  <div class="card"><input id="stQ" placeholder="Tìm mã / tên / màu / size…">
+  <div class="card"><input id="stQ" placeholder="🔍 Tìm mã / tên / màu / size…">
   <div class="tblwrap" style="margin-top:10px"><table><thead><tr><th>Mã</th><th>Tên</th><th>Màu</th><th>Size</th><th class="money">Đã nhập</th><th class="money">Đã bán</th><th class="money">Tồn</th><th class="money">Cần đặt</th></tr></thead>
   <tbody id="stBody"></tbody></table></div></div>
   <div class="card"><h3>Báo cáo xuất – nhập – tồn theo kỳ</h3>
@@ -612,18 +588,20 @@ async function pgStock(){
   render();$('stQ').oninput=render;
   $('xLoad').onclick=async()=>{
     $('xBox').innerHTML='<p class="mut">Đang tải…</p>';
-    try{const r=await rpc('stockReport',$('xFrom').value,$('xTo').value);const rr=r.rows||[];
+    try{const r=await rpc('stockReport',$('xFrom').value,$('xTo').value);if(seq!==NAVSEQ)return;const rr=r.rows||[];
       if(!rr.length){$('xBox').innerHTML='<p class="mut">Kỳ này không có dữ liệu.</p>';return;}
       const skip=['code','name','color','size'];
       const cols=Object.keys(rr[0]).filter(k=>!skip.includes(k)&&typeof rr[0][k]==='number');
       const lbl={open:'Tồn đầu',begin:'Tồn đầu',inQty:'Nhập',outQty:'Xuất',qty:'Tồn cuối',close:'Tồn cuối',nhap:'Nhập',xuat:'Xuất',tonDau:'Tồn đầu',tonCuoi:'Tồn cuối'};
       $('xBox').innerHTML=`<div class="tblwrap"><table><thead><tr><th>Mã</th><th>Tên</th><th>Màu</th><th>Size</th>${cols.map(c=>`<th class="money">${lbl[c]||esc(c)}</th>`).join('')}</tr></thead>
       <tbody>${rr.map(x=>`<tr><td><b>${esc(x.code)}</b></td><td>${esc(x.name||'')}</td><td>${esc(x.color||'')}</td><td>${esc(x.size||'')}</td>${cols.map(c=>`<td class="money">${x[c]}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
-    }catch(e){$('xBox').innerHTML=`<p class="bad">Lỗi: ${esc(e.message)}</p>`;}
+    }catch(e){if(seq!==NAVSEQ)return;$('xBox').innerHTML=`<p class="bad">Lỗi: ${esc(e.message)}</p>`;}
   };
 }
+
 /* ================= NHAP HANG VE ================= */
 function pgImport(){
+  ++NAVSEQ;
   $('main').innerHTML=head('Nhập hàng về')+`
   <div class="card"><div class="row"><div><label>Ngày về</label><input type="date" id="kDate" value="${esc(D.today||todayISO())}"></div>
   <div style="flex:2"><label>Ghi chú phiếu nhập</label><input id="kNote" placeholder="vd: Lô Taobao 14/10"></div></div>
@@ -659,8 +637,9 @@ function pgImport(){
 /* ================= TY GIA ================= */
 let RATE_OLD='';
 async function pgRate(){
+  const seq=++NAVSEQ;
   $('main').innerHTML=head('Tỷ giá tệ')+`<div class="card">Đang tải…</div>`;
-  try{const list=await rpc('listRates');const now=list[0];
+  try{const list=await rpc('listRates');if(seq!==NAVSEQ)return;const now=list[0];
     $('main').innerHTML=head('Tỷ giá tệ / VNĐ')+`
     <div class="kpis"><div class="kpi grad"><div class="lb">Tỷ giá hiện tại</div><div class="vl">${now?money(now.rate)+'đ':'—'}</div><div style="font-size:12px">${now?'ngày '+esc(now.date):''}</div></div></div>
     <div class="card"><h3>${RATE_OLD?'Sửa tỷ giá ngày '+RATE_OLD:'Thêm / sửa tỷ giá'}</h3>
@@ -686,13 +665,14 @@ async function pgRate(){
       try{const r=await rpc('saveRate',{day,rate,note:$('tgNote').value.trim(),oldDay:RATE_OLD});
         toast((r.added?'Đã thêm':'Đã cập nhật')+' tỷ giá '+money(r.rate)+'đ',true);RATE_OLD='';pgRate();}
       catch(e){toast('Lỗi: '+e.message,false);}};
-  }catch(e){$('main').innerHTML=head('Tỷ giá')+`<div class="card bad">Lỗi: ${esc(e.message)}</div>`;}
+  }catch(e){if(seq!==NAVSEQ)return;$('main').innerHTML=head('Tỷ giá')+`<div class="card bad">Lỗi: ${esc(e.message)}</div>`;}
 }
 
 /* ================= KHACH HANG ================= */
 function pgCusts(){
+  ++NAVSEQ;
   $('main').innerHTML=head('Khách hàng',`<button class="btn" onclick="custForm(null)">＋ Thêm khách</button>`)+`
-  <div class="card"><input id="cuQ" placeholder="Tìm mã KH / tên / SĐT…"><div id="cuList" style="margin-top:10px"></div></div>`;
+  <div class="card"><input id="cuQ" placeholder="🔍 Tìm mã KH / tên / SĐT…"><div id="cuList" style="margin-top:10px"></div></div>`;
   const render=()=>{const q=norm($('cuQ').value);
     const list=D.customers.filter(c=>!q||norm([c.code,c.name,c.phone].join(' ')).includes(q));
     $('cuList').innerHTML=list.length?list.map(c=>`<div class="cart-line">
@@ -732,9 +712,10 @@ function custForm(c){
   };
 }
 async function custDetail(code){
+  const s0=NAVSEQ;
   const c=custByCode(code);
   openModal(mHead(code+' — '+(c?c.name:''))+'<p class="mut">Đang tải lịch sử…</p>',true);
-  try{const r=await rpc('getCustomerDetail',code);const orders=r.orders||r.history||[];
+  try{const r=await rpc('getCustomerDetail',code);if(s0!==NAVSEQ)return;const orders=r.orders||r.history||[];
     openModal(mHead(code+' — '+(c?c.name:''))+`
     <p>${esc(c?c.phone:'')} • ${esc(c?c.group:'')} ${c&&num(c.debt)>0?`• <b class="bad">Đang nợ ${money(c.debt)}đ</b>`:''}</p>
     ${orders.length?orders.map(o=>`<div style="border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:10px">
@@ -746,8 +727,42 @@ async function custDetail(code){
     document.querySelectorAll('[data-cpdf]').forEach(b=>b.onclick=async()=>{
       try{const r=await rpc('exportOrderPdf',b.dataset.cpdf);showBill(r,'PHIẾU ĐƠN HÀNG');}
       catch(e){toast('Không mở được phiếu: '+e.message,false);}});
-  }catch(e){openModal(mHead('Khách '+code)+`<p class="bad">Lỗi: ${esc(e.message)}</p>`);}
+  }catch(e){if(s0!==NAVSEQ)return;openModal(mHead('Khách '+code)+`<p class="bad">Lỗi: ${esc(e.message)}</p>`);}
 }
 </script>
 </body>
 </html>
+
+    <p class="c mut">${esc(title||'PHIẾU ĐƠN HÀNG')} • <b>${esc(r.orderCode||'')}</b></p>
+    <p style="margin-top:10px">Khách: <b>${esc(cu.name||'')}</b>${cu.phone?` • ${esc(cu.phone)}`:''}${cu.address?`<br>Địa chỉ: ${esc(cu.address)}`:''}</p>
+    <table style="margin-top:8px"><thead><tr><th>Sản phẩm</th><th class="money">SL</th><th class="money">Đơn giá</th><th class="money">Thành tiền</th></tr></thead>
+    <tbody>${(o.lines||[]).map(billLine).join('')}</tbody></table>
+    <table style="margin-top:6px"><tbody>
+      <tr><td>Tổng cộng</td><td class="money"><b>${money(o.total)}đ</b></td></tr>
+      <tr><td>Đã thu</td><td class="money">${money(o.paid)}đ</td></tr>
+      <tr><td>Còn lại</td><td class="money bad"><b>${money(o.remain)}đ</b></td></tr></tbody></table>
+    <p class="c mut" style="margin-top:10px">Cảm ơn bạn đã ủng hộ shop! Hàng order Taobao về 12–18 ngày.</p></div>
+    <div class="row noprint" style="margin-top:14px">
+      ${r.pdfUrl?`<button class="btn-ghost" onclick="window.open('${esc(r.pdfUrl)}','_blank')">📄 Mở PDF</button>`:''}
+      <button class="btn-ghost" onclick="dlBillPdf()">⬇ Xuất PDF</button>
+      <button class="btn-ghost" onclick="window.print()">🖨 In phiếu</button>
+      <button class="btn-ok" onclick="navigator.clipboard&&navigator.clipboard.writeText(\`${zaloTxt}\`).then(()=>toast('Đã chép nội dung — dán vào Zalo cho khách',true))">💬 Chép gửi Zalo</button>
+      <button class="btn" onclick="closeModal();go('orders')">Đóng</button>
+    </div>`,true);
+}
+function dlBillPdf(){
+  const el=$('bill');if(!el||typeof html2pdf==='undefined')return toast('Chưa sẵn sàng xuất PDF',false);
+  html2pdf().set({margin:10,filename:'phieu-don-hang.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(el).save();
+}
+">ngày ${esc(d.rate.date)}</div>`:'')}
+      ${kpi('Đã giao hôm nay',t.delivered)}
+    </div>
+    <div class="card"><h3>Doanh thu theo tháng — ${d.year}</h3>
+      <div class="bars">${d.months.map((x,i)=>`<div class="bar" style="height:${Math.max(3,Math.round(num(x.revenue)/max*100))}%"><span>${num(x.revenue)?money(x.revenue):''}</span><em>T${i+1}</em></div>`).join('')}</div>
+      <div style="height:20px"></div>
+    </div>
+    ${d.top&&d.top.length?`<div class="card"><h3>Bán chạy</h3><div class="tblwrap"><table><tbody>${d.top.map(x=>`<tr><td><b>${esc(x.code||'')}</b> ${esc(x.name||'')}</td><td class="money">${esc(x.qty??'')}</td></tr>`).join('')}</tbody></table></div></div>`:''}
+    ${d.debtors&&d.debtors.length?`<div class="card"><h3>Khách đang nợ</h3><div class="tblwrap"><table><thead><tr><th>Khách</th><th class="money">Còn nợ</th></tr></thead><tbody>${d.debtors.map(c=>`<tr><td><b>${esc(c.code)}</b> — ${esc(c.name)}</td><td class="money bad"><b>${money(c.debt)}đ</b></td></tr>`).join('')}</tbody></table></div></div>`:''}
+    ${d.short&&d.short.length?`<div class="card"><h3>⚠️ Màu/size cần đặt Taobao (đã bán quá tồn)</h3><div class="tblwrap"><table><thead><tr><th>Mã</th><th>Tên</th><th>Màu</th><th>Size</th><th class="money">Thiếu</th></tr></thead><tbody>${d.short.map(x=>`<tr><td><b>${esc(x.code)}</b></td><td>${esc(x.name||'')}</td><td>${esc(x.color||'')}</td><td>${esc(x.size||'')}</td><td class="money bad"><b>${Math.abs(num(x.qty))}</b></td></tr>`).join('')}</tbody></table></div></div>`:''}`;
+  }catch(e){if(seq!==NAVSEQ)return;$('main').innerHTML=head('Tổng quan')+`<div class="card bad">Lỗi tải tổng quan: ${esc(e.message)}</div>`;}
+}
