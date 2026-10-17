@@ -228,7 +228,19 @@ async function pgDash(){
       ${kpi('Đơn đang xử lý',o.processing,`<div class="mut" style="font-size:12px">${money(o.processingValue)}đ</div>`)}
       ${kpi('Khách còn nợ',money(d.debtTotal)+'đ',`<div class="mut" style="font-size:12px">${d.debtCount} khách</div>`)}
       ${kpi('Tổng tồn kho',d.stockQty+' cái')}
-      ${kpi('Tỷ giá mới nhất',d.rate?money(d.rate.rate)+'đ':'—',d.rate?`<div class="mut" style="font-size:12px
+      ${kpi('Tỷ giá mới nhất',d.rate?money(d.rate.rate)+'đ':'—',d.rate?`<div class="mut" style="font-size:12px">ngày ${esc(d.rate.date)}</div>`:'')}
+      ${kpi('Đã giao hôm nay',t.delivered)}
+    </div>
+    <div class="card"><h3>Doanh thu theo tháng — ${d.year}</h3>
+      <div class="bars">${d.months.map((x,i)=>`<div class="bar" style="height:${Math.max(3,Math.round(num(x.revenue)/max*100))}%"><span>${num(x.revenue)?money(x.revenue):''}</span><em>T${i+1}</em></div>`).join('')}</div>
+      <div style="height:20px"></div>
+    </div>
+    ${d.top&&d.top.length?`<div class="card"><h3>Bán chạy</h3><div class="tblwrap"><table><tbody>${d.top.map(x=>`<tr><td><b>${esc(x.code||'')}</b> ${esc(x.name||'')}</td><td class="money">${esc(x.qty??'')}</td></tr>`).join('')}</tbody></table></div></div>`:''}
+    ${d.debtors&&d.debtors.length?`<div class="card"><h3>Khách đang nợ</h3><div class="tblwrap"><table><thead><tr><th>Khách</th><th class="money">Còn nợ</th></tr></thead><tbody>${d.debtors.map(c=>`<tr><td><b>${esc(c.code)}</b> — ${esc(c.name)}</td><td class="money bad"><b>${money(c.debt)}đ</b></td></tr>`).join('')}</tbody></table></div></div>`:''}
+    ${d.short&&d.short.length?`<div class="card"><h3>⚠️ Màu/size cần đặt Taobao (đã bán quá tồn)</h3><div class="tblwrap"><table><thead><tr><th>Mã</th><th>Tên</th><th>Màu</th><th>Size</th><th class="money">Thiếu</th></tr></thead><tbody>${d.short.map(x=>`<tr><td><b>${esc(x.code)}</b></td><td>${esc(x.name||'')}</td><td>${esc(x.color||'')}</td><td>${esc(x.size||'')}</td><td class="money bad"><b>${Math.abs(num(x.qty))}</b></td></tr>`).join('')}</tbody></table></div></div>`:''}`;
+  }catch(e){if(seq!==NAVSEQ)return;$('main').innerHTML=head('Tổng quan')+`<div class="card bad">Lỗi tải tổng quan: ${esc(e.message)}</div>`;}
+}
+
 /* ================= TAO DON ================= */
 let CART=[]; // {code,color,size,qty}
 function variantStock(code,color,size){const x=(D.stock||[]).find(s=>s.code===code&&s.color===color&&s.size===size);return x?num(x.qty):0;}
@@ -343,7 +355,7 @@ function pgNew(){
     }else{
       const has=$('cCode').value.trim()||$('cName').value.trim();
       $('ncBox').style.display=has?'block':'none';
-      $('cInfo').innerHTML=has?($('cCode').value.trim()?`Khách mới — sẽ tạo Mã KH <b>${esc($('cCode').value.trim())}</b> khi lưu đơn.`:'Khách mới — cần ghi Mã KH ở ô bên trái.')':'';
+      $('cInfo').innerHTML=has?($('cCode').value.trim()?`Khách mới — sẽ tạo Mã KH <b>${esc($('cCode').value.trim())}</b> khi lưu đơn.`:'Khách mới — cần ghi Mã KH ở ô bên trái.'):'';
     }
     return c;};
   $('cCode').oninput=updCust;$('cName').oninput=updCust;$('ncPhone').addEventListener('input',updCust);
@@ -383,6 +395,28 @@ function showBill(r,title){
   const zaloTxt=`Don hang ${r.orderCode} - LOAN BINH DO MUA\nKhach: ${cu.name||''}\nTong: ${money(o.total)}d - Da thu: ${money(o.paid)}d - Con lai: ${money(o.remain)}d\nCam on ban da ung ho shop! Hang order Taobao ve 12-18 ngay.`;
   openModal(`<div id="bill">
     <p class="c" style="font-size:26px">🛍️</p><h2>LOAN BÌNH ĐỒ MÚA</h2>
+    <p class="c mut">${esc(title||'PHIẾU ĐƠN HÀNG')} • <b>${esc(r.orderCode||'')}</b></p>
+    <p style="margin-top:10px">Khách: <b>${esc(cu.name||'')}</b>${cu.phone?` • ${esc(cu.phone)}`:''}${cu.address?`<br>Địa chỉ: ${esc(cu.address)}`:''}</p>
+    <table style="margin-top:8px"><thead><tr><th>Sản phẩm</th><th class="money">SL</th><th class="money">Đơn giá</th><th class="money">Thành tiền</th></tr></thead>
+    <tbody>${(o.lines||[]).map(billLine).join('')}</tbody></table>
+    <table style="margin-top:6px"><tbody>
+      <tr><td>Tổng cộng</td><td class="money"><b>${money(o.total)}đ</b></td></tr>
+      <tr><td>Đã thu</td><td class="money">${money(o.paid)}đ</td></tr>
+      <tr><td>Còn lại</td><td class="money bad"><b>${money(o.remain)}đ</b></td></tr></tbody></table>
+    <p class="c mut" style="margin-top:10px">Cảm ơn bạn đã ủng hộ shop! Hàng order Taobao về 12–18 ngày.</p></div>
+    <div class="row noprint" style="margin-top:14px">
+      ${r.pdfUrl?`<button class="btn-ghost" onclick="window.open('${esc(r.pdfUrl)}','_blank')">📄 Mở PDF</button>`:''}
+      <button class="btn-ghost" onclick="dlBillPdf()">⬇ Xuất PDF</button>
+      <button class="btn-ghost" onclick="window.print()">🖨 In phiếu</button>
+      <button class="btn-ok" onclick="navigator.clipboard&&navigator.clipboard.writeText(\`${zaloTxt}\`).then(()=>toast('Đã chép nội dung — dán vào Zalo cho khách',true))">💬 Chép gửi Zalo</button>
+      <button class="btn" onclick="closeModal();go('orders')">Đóng</button>
+    </div>`,true);
+}
+function dlBillPdf(){
+  const el=$('bill');if(!el||typeof html2pdf==='undefined')return toast('Chưa sẵn sàng xuất PDF',false);
+  html2pdf().set({margin:10,filename:'phieu-don-hang.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(el).save();
+}
+
 /* ================= DON HANG ================= */
 let ORD=null,ORD_F='active'; // active = an da giao (mac dinh)
 async function pgOrders(){
@@ -732,37 +766,3 @@ async function custDetail(code){
 </script>
 </body>
 </html>
-
-    <p class="c mut">${esc(title||'PHIẾU ĐƠN HÀNG')} • <b>${esc(r.orderCode||'')}</b></p>
-    <p style="margin-top:10px">Khách: <b>${esc(cu.name||'')}</b>${cu.phone?` • ${esc(cu.phone)}`:''}${cu.address?`<br>Địa chỉ: ${esc(cu.address)}`:''}</p>
-    <table style="margin-top:8px"><thead><tr><th>Sản phẩm</th><th class="money">SL</th><th class="money">Đơn giá</th><th class="money">Thành tiền</th></tr></thead>
-    <tbody>${(o.lines||[]).map(billLine).join('')}</tbody></table>
-    <table style="margin-top:6px"><tbody>
-      <tr><td>Tổng cộng</td><td class="money"><b>${money(o.total)}đ</b></td></tr>
-      <tr><td>Đã thu</td><td class="money">${money(o.paid)}đ</td></tr>
-      <tr><td>Còn lại</td><td class="money bad"><b>${money(o.remain)}đ</b></td></tr></tbody></table>
-    <p class="c mut" style="margin-top:10px">Cảm ơn bạn đã ủng hộ shop! Hàng order Taobao về 12–18 ngày.</p></div>
-    <div class="row noprint" style="margin-top:14px">
-      ${r.pdfUrl?`<button class="btn-ghost" onclick="window.open('${esc(r.pdfUrl)}','_blank')">📄 Mở PDF</button>`:''}
-      <button class="btn-ghost" onclick="dlBillPdf()">⬇ Xuất PDF</button>
-      <button class="btn-ghost" onclick="window.print()">🖨 In phiếu</button>
-      <button class="btn-ok" onclick="navigator.clipboard&&navigator.clipboard.writeText(\`${zaloTxt}\`).then(()=>toast('Đã chép nội dung — dán vào Zalo cho khách',true))">💬 Chép gửi Zalo</button>
-      <button class="btn" onclick="closeModal();go('orders')">Đóng</button>
-    </div>`,true);
-}
-function dlBillPdf(){
-  const el=$('bill');if(!el||typeof html2pdf==='undefined')return toast('Chưa sẵn sàng xuất PDF',false);
-  html2pdf().set({margin:10,filename:'phieu-don-hang.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(el).save();
-}
-">ngày ${esc(d.rate.date)}</div>`:'')}
-      ${kpi('Đã giao hôm nay',t.delivered)}
-    </div>
-    <div class="card"><h3>Doanh thu theo tháng — ${d.year}</h3>
-      <div class="bars">${d.months.map((x,i)=>`<div class="bar" style="height:${Math.max(3,Math.round(num(x.revenue)/max*100))}%"><span>${num(x.revenue)?money(x.revenue):''}</span><em>T${i+1}</em></div>`).join('')}</div>
-      <div style="height:20px"></div>
-    </div>
-    ${d.top&&d.top.length?`<div class="card"><h3>Bán chạy</h3><div class="tblwrap"><table><tbody>${d.top.map(x=>`<tr><td><b>${esc(x.code||'')}</b> ${esc(x.name||'')}</td><td class="money">${esc(x.qty??'')}</td></tr>`).join('')}</tbody></table></div></div>`:''}
-    ${d.debtors&&d.debtors.length?`<div class="card"><h3>Khách đang nợ</h3><div class="tblwrap"><table><thead><tr><th>Khách</th><th class="money">Còn nợ</th></tr></thead><tbody>${d.debtors.map(c=>`<tr><td><b>${esc(c.code)}</b> — ${esc(c.name)}</td><td class="money bad"><b>${money(c.debt)}đ</b></td></tr>`).join('')}</tbody></table></div></div>`:''}
-    ${d.short&&d.short.length?`<div class="card"><h3>⚠️ Màu/size cần đặt Taobao (đã bán quá tồn)</h3><div class="tblwrap"><table><thead><tr><th>Mã</th><th>Tên</th><th>Màu</th><th>Size</th><th class="money">Thiếu</th></tr></thead><tbody>${d.short.map(x=>`<tr><td><b>${esc(x.code)}</b></td><td>${esc(x.name||'')}</td><td>${esc(x.color||'')}</td><td>${esc(x.size||'')}</td><td class="money bad"><b>${Math.abs(num(x.qty))}</b></td></tr>`).join('')}</tbody></table></div></div>`:''}`;
-  }catch(e){if(seq!==NAVSEQ)return;$('main').innerHTML=head('Tổng quan')+`<div class="card bad">Lỗi tải tổng quan: ${esc(e.message)}</div>`;}
-}
